@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer  # create a pipeline
+from sklearn.impute import SimpleImputer  # missing values
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -26,7 +26,7 @@ class DataTransformation:
 
     def get_data_transformer_object(self):
         '''
-        This function si responsible for data trnasformation
+        This function is responsible for data transformation
 
         '''
         try:
@@ -50,6 +50,7 @@ class DataTransformation:
             cat_pipeline = Pipeline(
 
                 steps=[
+
                     ("imputer", SimpleImputer(strategy="most_frequent")),
                     ("one_hot_encoder", OneHotEncoder()),
                     ("scaler", StandardScaler(with_mean=False))
@@ -115,6 +116,7 @@ class DataTransformation:
 
             logging.info(f"Saved preprocessing object.")
 
+            '''this save object is used for saving the pickle file'''
             save_object(
 
                 file_path=self.data_transformation_config.preprocessor_obj_file_path,
