@@ -1,16 +1,17 @@
-from src.Components.data_transformation import DataTransformationConfig
-from src.Components.data_transformation import DataTransformation
-
-from src.Components.model_trainer import ModelTrainer
-from src.Components.model_trainer import ModelTrainerConfig
-import sys
 import os
-from dataclasses import dataclass
-import pandas as pd
-from sklearn.model_selection import train_test_split
+import sys
 from src.exception import CustomException
 from src.logger import logging
-sys.path.append(os.path.abspath('./src'))
+import pandas as pd
+
+from sklearn.model_selection import train_test_split
+from dataclasses import dataclass
+
+from src.Components.data_transformation import DataTransformation
+from src.Components.data_transformation import DataTransformationConfig
+
+from src.Components.model_trainer import ModelTrainerConfig
+from src.Components.model_trainer import ModelTrainer
 
 
 @dataclass
@@ -25,16 +26,18 @@ class DataIngestion:
         self.ingestion_config = DataIngestionConfig()
 
     def initiate_data_ingestion(self):
-        logging.info("entered the data ingestion method or component.")
+        logging.info("Entered the data ingestion method or component")
         try:
             df = pd.read_csv('notebook/data/stud.csv')
-            logging.info("read the dataset as dataframe")
+            logging.info('Read the dataset as dataframe')
+
             os.makedirs(os.path.dirname(
                 self.ingestion_config.train_data_path), exist_ok=True)
 
             df.to_csv(self.ingestion_config.raw_data_path,
                       index=False, header=True)
-            logging.info("train test split initiated")
+
+            logging.info("Train test split initiated")
             train_set, test_set = train_test_split(
                 df, test_size=0.2, random_state=42)
 
@@ -44,10 +47,13 @@ class DataIngestion:
             test_set.to_csv(self.ingestion_config.test_data_path,
                             index=False, header=True)
 
-            logging.info("ingestion of the data is completed")
+            logging.info("Inmgestion of the data iss completed")
 
-            return (self.ingestion_config.train_data_path, self.ingestion_config.test_data_path)
+            return (
+                self.ingestion_config.train_data_path,
+                self.ingestion_config.test_data_path
 
+            )
         except Exception as e:
             raise CustomException(e, sys)
 
