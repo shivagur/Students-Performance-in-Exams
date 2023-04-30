@@ -14,6 +14,8 @@ import os
 
 from src.utils import save_object
 
+# this function what it does is it takes the input whatever required for the data_transformation
+
 
 @dataclass
 class DataTransformationConfig:
@@ -26,7 +28,7 @@ class DataTransformation:
 
     def get_data_transformer_object(self):
         '''
-        This function is responsible for data transformation
+        This function is responsible for data transformation based on different types of data
 
         '''
         try:
@@ -76,6 +78,8 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e, sys)
 
+    # starting my data_transformation inside this function.
+
     def initiate_data_transformation(self, train_path, test_path):
 
         try:
@@ -116,7 +120,8 @@ class DataTransformation:
 
             logging.info(f"Saved preprocessing object.")
 
-            '''this save object is used for saving the pickle file'''
+            '''this save object is used for saving the pickle file and this save object functionality is written in utils.py file
+                  for common usage.'''
             save_object(
 
                 file_path=self.data_transformation_config.preprocessor_obj_file_path,

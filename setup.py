@@ -6,11 +6,11 @@ from typing import List
 
 HYPEN_E_DOT = '-e .'
 
+'''here below in setup function we have install_requires and we may not be able to specify all the packages what we need explicitly so 
+    this func will take care of that for us'''
+
 
 def get_requirements(file_path: str) -> List[str]:
-    '''
-    this function will return the list of requirements
-    '''
     requirements = []
     with open(file_path) as file_obj:
         requirements = file_obj.readlines()

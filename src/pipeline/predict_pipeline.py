@@ -2,12 +2,13 @@ import sys
 import pandas as pd
 import os
 from src.exception import CustomException
-from src.utils import load_object
+from src.utils import load_object  # this is just to load the pickle file
 
 
 class PredictPipeline:
     def __init__(self):
         pass
+    # this predict is just like model prediction which is basically doing the prediction.
 
     def predict(self, features):
         try:
@@ -23,6 +24,8 @@ class PredictPipeline:
 
         except Exception as e:
             raise CustomException(e, sys)
+
+# this class is responsible in mapping all the all the inputs that we are giving in html form to backend classes
 
 
 class CustomData:
@@ -48,6 +51,7 @@ class CustomData:
         self.reading_score = reading_score
 
         self.writing_score = writing_score
+    # the below function will return all input inform of dataframes that bcoz we trained our model in the form of a dataframe.
 
     def get_data_as_data_frame(self):
         try:

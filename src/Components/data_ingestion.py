@@ -5,6 +5,7 @@ from src.logger import logging
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
+# this data class is used to create class variables in short
 from dataclasses import dataclass
 
 from src.Components.data_transformation import DataTransformation
@@ -28,6 +29,7 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info("Entered the data ingestion method or component")
         try:
+            # here we can read data from other resources like databse, or an api
             df = pd.read_csv('notebook/data/stud.csv')
             logging.info('Read the dataset as dataframe')
 
@@ -68,3 +70,4 @@ if __name__ == "__main__":
 
     modeltrainer = ModelTrainer()
     print(modeltrainer.initiate_model_trainer(train_arr, test_arr))
+    '''(/home/T7730OG/Documents/MachineLearning_Project/kn) T7730OG@ubncnd22037sq:~/Documents/MachineLearning_Project$ python3 -m src.Components.data_ingestion'''
