@@ -1,0 +1,392 @@
+
+===============================================
+PROJECT NAME :- STUDENT PERFORMANCE INDICATOR PROJECT
+===============================================
+END TO END MACHINE LEARNNG PROJECT USING CI/CD PIPELINE
+
+Data Ingestion
+Data Transformation
+Model Trainer
+Model Evaluation
+Model deployment
+
+
+the above all steps were performed in the form of CI/CD pipelines(Github actions)...and deployment(AWS, azure) in various clouds
+
+
+
+
+
+============================================================================================================================================================================================
+****Tutorial 1- End To End ML Project With Deployment-Github And Code Set Up*****
+
+
+Agenda:
+
+--> Setup the github (repo)
+  a) setup a new env
+  b) setup.py
+  c) requirements.txt
+  
+  
+ * Firstly setup a project name and created a README.md file also .gitignore for removing unnecessary packages if any while building in next steps.
+ * So i have now a readme file and gitignore file in my project structure. Now I will create two more other files requirements.txt (contains all the libs and packages needed for project) and other is setup.py file (This is mainly responsible for creating the ML appn as a package and also can deploy in PyPi and from there anyone can install and use it)
+ 
+ 
+ * In setup.py file import main things required 
+     from setuptools import find_packages, setup like this ...
+     and in setup function provide details like name , version , author , author_email, packages = find_packages(), install_requires() so the find_packages()  will search for find packages in entire project directory structure . 
+ * So next step is to create a src folder and create a __init__.py  file so find packages will search for this init file in entire directory and it considers "src" as a package and build it so that we can import this and use where ever we want.
+ 
+ * The entire project development will be happening inside this src folder.
+ 
+ * And inside requirements.txt file after writing packages names which we will install we will use "-e ." which automatically triggers setup.py file.
+ 
+ * And now if you run pip install -r requirements.txt it will install all packges mentioned in file and also you will get a new folder named "ML_PROJECT.egg-info" which contains dependency_links, pkg-info, requires , sources , top_level.txt files....
+
+  
+======================================================================================================================================================================================= 
+******Tutorial 2- End To End ML Project With Deployment-Project Structure, Logging And Exception Handling********
+
+
+* And now onwards all the project implementation will happen inside src folder 
+
+* Inside src folder created another folder called components and inside it create another __init__.py file. created two new files named data ingestion(Reading data from a database or other file      location and split into train and test format)  and data transformation(over here will see to how to change categorical features into numerical features  python files ) and also model_trainer.py  files and all these 3 files are for training purpose .
+
+* Now inside same src folder create another folder named pipeline and create two files under it. 
+   ---->train_pipeline.py (from this train pieline will triggers the components files)
+   ---->predict_pipeline.py (for the prediction purpose on new data)
+   -----> Also create another python file inside same folder named __init__.py file 
+   
+   
+* Now outside of both components and pipeline folders I.e. inside src folder create other 3 files...
+   ----> logger.py
+   ----> exception.py
+   -----> utils.py
+   
+   
+* So after creating them wrote code in logger and exception files and understood them as well its so easy. And if incase we need logger module in exception handling we can import by 
+  from src.logging import logger 
+
+
+=======================================================================================================================================================================================
+
+*********Tutorial 3-End To End ML Project With Deployment-Project Problem Statement,EDA And Model Training*******
+
+
+trying to understand the EDA_student_erformance and also model training ipynb files...
+=======================================================================================================================================================================================
+
+***********Tutorial 4-End To End ML Project With Deployment- Data Ingestion Implementation Line By Line********
+
+Main purpose of data ingestion was we read our dataset from kind of a source and then we do  some train test split and afterwards do data transformation.
+
+So after running this data ingestion file a folder named artifacts and inside artifacts we get data.csv , train.csv and test.csv files.
+Also  inside  logs folder a new log file is created  saying that all the steps had been covered successfully.
+
+------>[ 2023-04-02 16:22:15,578 ] 23 root - INFO - entered the data ingestion method or component.
+       [ 2023-04-02 16:22:15,580 ] 26 root - INFO - read the dataset as dataframe
+       [ 2023-04-02 16:22:15,583 ] 32 root - INFO - train test split initiated
+       [ 2023-04-02 16:22:15,586 ] 42 root - INFO - ingestion of the data is completed
+       
+       
+==========================================================================================================================================================================================
+
+
+***********Tutorial 5-End To End ML Project-Data Transformation Implementation Using Pipelines*************
+
+Main purpose of data transformation is to do feature engineering and data cleaning 
+
+Onehotencoding for converting categorical variables similar to dummy variables in pandas. 
+
+Standard scalar for scaling the numerical variables is a similar scale.
+
+Another scalar is the minmax scaler.
+
+
+----> Also i can check the model_training.ipynb file   for whats happening there and can implement them in data transformation file.
+
+-----> dataclass is that, with the use of dataclass, one can directly define variables and their data types in a class.
+
+So basically here what we are doing is ....similar to data ingestion file we are defining datatransformation_config which is used to take input for the data_transformation file.
+
+And then declare class named datatransformation inside we declare a function named get_data_transformer_object which is responsible for data transformation ....Inside this function only we declare try and except blocks. Inside try block....
+
+ try:
+            numerical_columns = ["writing_score", "reading_score"]
+            categorical_columns = [
+                "gender",
+                "race_ethnicity",
+                "parental_level_of_education",
+                "lunch",
+                "test_preparation_course",
+            ]
+
+            num_pipeline = Pipeline(
+                steps=[
+                    #this imputer bcoz in eda we had seen lot of outliers in numerical data so using median
+                    ("imputer", SimpleImputer(strategy="median")),
+                    
+                    ("scaler", StandardScaler())
+
+                ]
+            )
+
+            cat_pipeline = Pipeline(
+
+                steps=[
+                
+                    # to handle all missing values in categorical values replace them with most_frequent i.e. median
+                    
+                    ("imputer", SimpleImputer(strategy="most_frequent")),
+                    # also can use target_guided encoder
+                    ("one_hot_encoder", OneHotEncoder()),
+                    # apply standard scaling
+                    ("scaler", StandardScaler(with_mean=False))
+                ]
+
+            )
+
+            logging.info(f"Categorical columns: {categorical_columns}")
+            logging.info(f"Numerical columns: {numerical_columns}")
+            
+            # to combine the num_pipeline and cat_pipeline we are using column transformer
+            
+            preprocessor = ColumnTransformer(
+                [
+                    ("num_pipeline", num_pipeline, numerical_columns),
+                    ("cat_pipelines", cat_pipeline, categorical_columns)
+
+                ]
+
+
+            )
+
+            return preprocessor
+
+  except Exception as e:
+            raise CustomException(e, sys)
+            
+            
+  And for save object pickle file  written some code ...
+  
+  After to check if everything is working correctly or not import data transformation in dataingestion file and inside main function create object and call data transformation functions.
+  
+  and pass train data and test data as parameters to the function. below written few lines to get an idea.
+  
+  if __name__ == "__main__":
+    obj = DataIngestion()
+    train_data, test_data = obj.initiate_data_ingestion()
+
+    data_transformation = DataTransformation()
+    train_arr, test_arr, _ = data_transformation.initiate_data_transformation(
+        train_data, test_data)
+  
+  
+  
+            
+            
+            
+
+
+==========================================================================================================================
+
+****************Tutorial 6-End To End ML Project-Model Training And Model Evaluating Component*************
+
+train different models and check accuracy 
+
+In model trainer file basically what we do is try out different models and check which gives best results in terms of metrics like accuracy  r-square .
+
+try different algos in regression and classification and check while training your model
+
+----> And main importantly always remember whether its for data ingestion or data transformation or model trainer files 
+      * after importing required libs
+      * make sure to create a config file which takes input to that respective file
+      
+-----> And in model trainer class we initiate a model trainer function and try out different models along with params and make a model report which is a dictionary and after getting best model score by applying a threshold value and after that saving that model file as a model.pkl file rusing save object function and you can see that func defn in utils.py also.
+
+-----> And when we run this data ingestion file we get r2 score ...
+
+==================================================================================================================================
+
+******************************Tutorial 7-End To End ML Project-Model Hyperparameter Tuning***********************
+
+In model trainer file inside the initiate model trainer function you had declared models dictionary right ....So 
+
+  params = {
+
+                'RandomForest': {
+
+                    'n_estimators': [50, 100, 200],
+                    'max_depth': [5, 10, 15],
+                    'min_samples_split': [2, 5, 10]
+                },
+
+
+                "DecisionTree": {
+
+                    'criterion': ['squared_error', 'friedman_mse', 'absolute_error', 'poisson'],
+                    # 'splitter':['best','random'],
+                    # 'max_features':['sqrt','log2'],
+                },
+
+                "Gradient_Boosting": {
+                    # 'loss':['squared_error', 'huber', 'absolute_error', 'quantile'],
+                    'learning_rate': [.1, .01, .05, .001],
+                    'subsample': [0.6, 0.7, 0.75, 0.8, 0.85, 0.9],
+                    # 'criterion':['squared_error', 'friedman_mse'],
+                    # 'max_features':['auto','sqrt','log2'],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                },
+
+                "Linear_Regression": {},
+
+                "k-neighbors_Classifier": {},
+
+                "XGBClassifier": {
+                    'learning_rate': [.1, .01, .05, .001],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                },
+
+                "CatBoosting_Classifier": {
+                    'depth': [6, 8, 10],
+                    'learning_rate': [0.01, 0.05, 0.1],
+                    'iterations': [30, 50, 100]
+                },
+
+                "AdaBoost_Classifier": {
+                    'learning_rate': [.1, .01, 0.5, .001],
+                    # 'loss':['linear','square','exponential'],
+                    'n_estimators': [8, 16, 32, 64, 128, 256]
+                }
+
+            }
+
+            model_report: dict = evaluate_models(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test,
+                                                 models=models, param=params)
+                                                 
+       In {model_report:dict} add another param=params 
+       
+       
+       Also in utils.py file evaluate models function 
+       
+       for i in range(len(list(models))):
+            model = list(models.values())[i]
+            para = param[list(models.keys())[i]] //and then apply grid serach cv or randomsearch cv 
+            
+            
+            gs = GridSearchCV(model, para, cv=3)
+            gs.fit(X_train, y_train)
+
+            model.set_params(**gs.best_params_)
+            model.fit(X_train, y_train)
+            
+            
+            and make sure you have updated data_ingestion , data_transformation, model_trainer and utils.py files so .....and perform hyperparameter tuning now
+            
+            an check the result of r-square now...
+            
+            
+============================================================================================================================================================================================
+
+***********************Tutorial 8-End To End ML Project-Create Prediction Pipeline Using Flask Web APP(app.py)******************************
+
+
+In the previous videos we had trained our model and generated artifacts and we have our 2 pickle files model.pkl and preprocessor.pkl files and we completed the model trainer part and did hyparameter tuning and then got the best performing model.
+
+And the importance of this prediction pipeline is create a simple web app which interacts with this pickle file 
+
+To begin with app.py file start importing libs and start a flask app .... inside app.py create predict_datapoint function with request methods as get or post 
+create templates folder and inside it create a index.html (default homepage for our app) and other one home.html (main ui page contains form for interacting with users)
+
+And by running the localhost viewport we can see the results of the prediction score...
+
+
+And the below videos are running our web app on different cloud platforms like aws beanstalk , azure cloud and generating docker images for our project and push it to ecr repo and creating a ec2 instance...and deploy using ci/cd pipelines and github actions.
+
+
+ ....you can view other time also ): Chill...
+          
+====================================================================================================================================
+****************************Tutorial 9-End To End ML Project-Deployment In AWS Cloud Using CICD Pipelines**********
+
+
+So in this video what i had learnt is for deploting our appn in aws beanstalk so for that created a new folder named .ebextensions/python-config and wrote a syntax for giving path to the appn.py file.
+
+and after that login to aws console and in beanstalk created a linux virtual machine for deploying our appn and done it using cd pipeline
+
+after logging into aws console account with your personal email id try to use elastic beanstalk service instance and try practically.
+
+
+============================================================================================================================================
+
+********************************Tutorial 10- Deployment Of ML Application In Azure Cloud Using Github Actions********************
+
+Here the project gemprice prediction is used by krish to deploy in azure cloud and after deployment we can abe able to successfully see the github/workflows in our github repo which is a .yaml file contains all the info....if you do practically you can get a idea.
+
+
+Read that .yaml file for better understanding 
+
+============================================================================================================================================
+
+********************************Tutorial 11- How To Deploy End To End ML Projects In Production AWS Cloud Using CI CD Pipeline***********
+
+In the last few videos saw how to deploy in amazon elasticbean cloud instance and also in azure and in this video will create a production grid deployment technique using aws where we specifically use ECR and ec2 instance 
+
+
+
+Created docker image  and pushed it into Ecr repository and then create a ec2 instance setup.
+
+-----> Docker build checked
+-----> Github workflow 
+-----> I am user in AWS
+
+##Docker setup in EC2 commands to be executed
+
+#optional
+
+sudo apt-get update -y
+
+sudo apt-get upgrade
+
+#required
+
+curl -fsSL https://get.docker.com -o get-docker.sh
+
+sudo sh get-docker.sh
+
+sudo usermod -aG docker ubuntu
+
+
+newgrp docker
+
+
+
+
+
+
+
+
+
+
+============================================================================================================================================================================================
+
+
+*****************************Tutorial 12- Step By Step Production Grade Machine Learning Projects Deployment Azure Web App MLOPS********************
+
+
+
+
+Main thing what we do here is ....
+
+-----> Convert our web app into docker image which is a private image.
+
+-----> docker image is then converted into container registry(azure)  similar to what we use ecr instance in aws cloud.
+
+-----> Now create a azure web app which acts as a server and we can pull container registry over here.
+
+=======================================================DONE BRO WITH THIS.....============================================================================================================
+
+
+
+
