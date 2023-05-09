@@ -12,6 +12,8 @@ app = application
 
 # Route for a home page
 
+# here by default homepage is index.html and the student form page is home.html
+
 
 @app.route('/')
 def index():

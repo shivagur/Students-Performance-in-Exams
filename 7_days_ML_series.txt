@@ -74,7 +74,7 @@ Agenda:
 *********Tutorial 3-End To End ML Project With Deployment-Project Problem Statement,EDA And Model Training*******
 
 
-trying to understand the EDA_student_erformance and also model training ipynb files...
+trying to understand the EDA_student_performance and also model training ipynb files...
 =======================================================================================================================================================================================
 
 ***********Tutorial 4-End To End ML Project With Deployment- Data Ingestion Implementation Line By Line********
