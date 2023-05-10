@@ -1,1 +1,7 @@
 *.ipynb linguist-language=Python
+*.cpp linguist-language=C++
+*.h linguist-language=C++
+*.html linguist-language=HTML
+*.py linguist-language=Python
+
+
