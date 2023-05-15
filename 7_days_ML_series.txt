@@ -9,7 +9,7 @@ Data Transformation
 Model Trainer
 Model Evaluation
 Model deployment
-
+#omshivasai
 
 the above all steps were performed in the form of CI/CD pipelines(Github actions)...and deployment(AWS, azure) in various clouds
 
